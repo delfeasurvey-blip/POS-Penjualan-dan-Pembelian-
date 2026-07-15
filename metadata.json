@@ -1,0 +1,6 @@
+{
+  "name": "POS Multi-User & Stok",
+  "description": "Sistem Kasir (POS) Penjualan & Pembelian, Monitor Stok, Penyesuaian, Laporan Hutang Piutang, dan Laporan Penjualan Multi-User untuk Admin, Cabang, Sales, dan Kurir.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
