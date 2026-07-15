@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, FormEvent } from "react";
+import { generatePDFDocument } from "./pdfGenerator";
 import {
   INITIAL_BRANCHES,
   INITIAL_SUPPLIERS,
@@ -754,6 +755,16 @@ export default function App() {
                 Pengiriman Kurir ({transactions.filter(t => t.type === 'penjualan' && t.deliveryStatus && t.deliveryStatus !== 'Selesai Diterima').length})
               </button>
             )}
+
+            {/* Global Document & PDF Download Button */}
+            <button
+              id="tab-risalah-pdf"
+              onClick={() => setActiveMenu("panduan")}
+              className={`px-3 py-1.5 rounded-md transition cursor-pointer flex items-center gap-1.5 ${activeMenu === "panduan" ? "bg-white text-indigo-600 shadow" : "text-slate-600 hover:text-slate-900"}`}
+            >
+              <FileText className="h-4 w-4 text-indigo-500" />
+              <span>Risalah & PDF</span>
+            </button>
           </nav>
         </div>
       </header>
@@ -2377,6 +2388,268 @@ export default function App() {
                   {transactions.filter(t => t.type === 'penjualan' && t.deliveryStatus === 'Selesai Diterima').length === 0 && (
                     <div className="text-center py-6 text-slate-450 text-[11.5px] italic">Belum ada riwayat tuntas kirim hari ini.</div>
                   )}
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+        {/* ======================= 8. RISALAH & DOCUMENTATION VIEW ======================= */}
+        {activeMenu === "panduan" && (
+          <div id="menu-panduan-section" className="space-y-6">
+            
+            {/* DOWNLOAD HEADER CARD */}
+            <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-2xl text-white p-6 sm:p-8 relative overflow-hidden shadow-xl">
+              <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-12 opacity-10 pointer-events-none">
+                <FileText className="h-64 w-64" />
+              </div>
+              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="max-w-2xl space-y-2">
+                  <span className="bg-indigo-500/30 text-indigo-200 border border-indigo-500/20 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase">
+                    Modul Ekspor PDF
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                    Risalah Spesifikasi &amp; Topologi Website
+                  </h2>
+                  <p className="text-indigo-200 text-sm leading-relaxed">
+                    Hasilkan dokumen PDF resmi yang memuat spesifikasi teknis lengkap, kegunaan setiap menu, diagram topologi multi-user, serta ringkasan analitik terkini.
+                  </p>
+                </div>
+                <div>
+                  <button
+                    id="btn-download-pdf-doc"
+                    onClick={() => generatePDFDocument({
+                      appName: "Sistem POS Kasir & Stok",
+                      currentUser: currentUser,
+                      metrics: {
+                        totalSales: dashboardMetrics.totalSales,
+                        totalCost: dashboardMetrics.totalPurchase,
+                        totalReceivables: dashboardMetrics.totalPiutang,
+                        totalPayables: dashboardMetrics.totalHutang
+                      }
+                    })}
+                    className="w-full md:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-3.5 rounded-xl transition duration-150 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20 text-sm"
+                  >
+                    <FileText className="h-5 w-5" />
+                    <span>Unduh PDF Resmi</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* HIGH-FIDELITY IN-APP READ PREVIEW */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 sm:p-10 space-y-8 max-w-4xl mx-auto text-slate-700 leading-relaxed font-sans">
+              
+              {/* Document Header */}
+              <div className="border-b border-slate-100 pb-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">SPESIFIKASI TEKNIS &amp; RISALAH SISTEM</h3>
+                  <p className="text-slate-500 text-sm">Sistem POS Kasir &amp; Stok Multi-User Terdistribusi • v2.1</p>
+                </div>
+                <div className="text-right">
+                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                    Live System
+                  </span>
+                  <p className="text-[11px] text-slate-400 mt-1">Status: Stabil &amp; Sinkron</p>
+                </div>
+              </div>
+
+              {/* Metadata Details Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl text-xs border border-slate-100">
+                <div>
+                  <p className="text-slate-400 font-medium">OTORISATOR DOKUMEN</p>
+                  <p className="font-bold text-slate-800 mt-0.5">{currentUser.name} ({currentUser.role.toUpperCase()})</p>
+                </div>
+                <div>
+                  <p className="text-slate-400 font-medium">TANGGAL PENERBITAN</p>
+                  <p className="font-bold text-slate-800 mt-0.5">15 Juli 2026</p>
+                </div>
+                <div>
+                  <p className="text-slate-400 font-medium">PERSENTASE KESERASIAN DATA</p>
+                  <p className="font-bold text-emerald-600 mt-0.5">100% Real-time Terdistribusi</p>
+                </div>
+              </div>
+
+              {/* 1. LATAR BELAKANG */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-indigo-600">
+                  <span className="h-6 w-1 rounded-full bg-indigo-600"></span>
+                  <h4 className="text-lg font-extrabold tracking-tight">1. Latar Belakang Masalah</h4>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Dalam lanskap bisnis ritel modern yang memiliki banyak jaringan cabang, efisiensi operasional sangat bergantung pada keakuratan sinkronisasi data antar divisi. Masalah klasik yang sering dihadapi adalah ketidakselarasan informasi stok produk antara gudang pusat dan toko cabang, keterlambatan pencatatan piutang pelanggan dari transaksi kredit sales di lapangan, serta rumitnya rekonsiliasi kas masuk yang dititipkan melalui kurir pengantar logistik.
+                </p>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Penggunaan metode pencatatan manual atau sistem kasir standalone tradisional terbukti memicu terjadinya selisih stok (stock opname), potensi piutang macet yang tidak terdeteksi, serta hilangnya peluang penjualan akibat keterlambatan pengisian stok kosong. Dokumen ini disusun sebagai risalah resmi yang menjabarkan struktur, fungsi, kegunaan, dan topologi dari Sistem POS Kasir &amp; Stok Multi-User Terdistribusi yang dirancang untuk menjawab tantangan tersebut.
+                </p>
+              </div>
+
+              {/* 2. PENDAHULUAN */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-indigo-600">
+                  <span className="h-6 w-1 rounded-full bg-indigo-600"></span>
+                  <h4 className="text-lg font-extrabold tracking-tight">2. Pendahuluan &amp; Solusi Terpadu</h4>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Sistem POS Kasir &amp; Stok Multi-User adalah aplikasi kasir (Point of Sale) modern, offline-ready, dan terintegrasi penuh yang menyatukan empat pilar utama operasional ritel ke dalam satu database tersentralisasi. Platform ini dikembangkan menggunakan teknologi React 18, Vite, dan Tailwind CSS untuk menjamin antarmuka yang sangat responsif, andal, dan ramah pengguna.
+                </p>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Sistem ini memiliki keunggulan berupa pembatasan hak akses yang ketat sesuai dengan peran kerja (role-based access control), modul POS penjualan tunai maupun kredit, sistem pemesanan suplai barang (PO Pembelian) otomatis, monitoring sisa stok terdistribusi real-time, manajemen piutang usaha yang rapi, laporan laba rugi visual, serta modul pelacak tugas pengiriman kurir logistik.
+                </p>
+              </div>
+
+              {/* 3. TOPOLOGI */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-indigo-600">
+                  <span className="h-6 w-1 rounded-full bg-indigo-600"></span>
+                  <h4 className="text-lg font-extrabold tracking-tight">3. Topologi Arsitektur Terdistribusi</h4>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Sistem memanfaatkan arsitektur database terdistribusi satu arah di mana setiap perubahan data di tingkat cabang disinkronisasikan secara instan ke server pusat. Berikut adalah skema visual interaktif alur kerja multi-user:
+                </p>
+
+                {/* Topology Diagram UI */}
+                <div className="bg-slate-900 text-indigo-300 p-6 rounded-xl font-mono text-xs overflow-x-auto shadow-inner space-y-3 border border-slate-800">
+                  <div className="text-emerald-400 font-bold text-center border-b border-indigo-900 pb-2 mb-2">
+                    ALUR INTEGRASI LOGISTIK &amp; FINANSIAL (REAL-TIME SINKRON)
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
+                    <div className="p-2 bg-indigo-950/60 rounded border border-indigo-900/50">
+                      <p className="text-indigo-400 font-bold">1. ADMIN PUSAT</p>
+                      <p className="text-slate-400 text-[9px] mt-1">Otoritas &amp; Laporan</p>
+                    </div>
+                    <div className="p-2 bg-indigo-950/60 rounded border border-indigo-900/50">
+                      <p className="text-indigo-400 font-bold">2. CABANG TOKO</p>
+                      <p className="text-slate-400 text-[9px] mt-1">POS &amp; PO Pembelian</p>
+                    </div>
+                    <div className="p-2 bg-indigo-950/60 rounded border border-indigo-900/50">
+                      <p className="text-indigo-400 font-bold">3. SALES LAPANGAN</p>
+                      <p className="text-slate-400 text-[9px] mt-1">Pesanan Kredit/Cash</p>
+                    </div>
+                    <div className="p-2 bg-indigo-950/60 rounded border border-indigo-900/50">
+                      <p className="text-indigo-400 font-bold">4. ARMADA KURIR</p>
+                      <p className="text-slate-400 text-[9px] mt-1">Pengantaran &amp; COD</p>
+                    </div>
+                  </div>
+                  <div className="text-center text-slate-400 py-1 text-[11px]">
+                    ⇅
+                  </div>
+                  <div className="bg-slate-950 p-3 rounded text-center text-[11px] text-slate-300 border border-indigo-950">
+                    <p className="font-bold text-white">DATABASE UTAMA SENTRALISASI</p>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Kalkulasi Laba: Rp {dashboardMetrics.totalSales.toLocaleString('id-ID')} (Omset) | Piutang Aktif: Rp {dashboardMetrics.totalPiutang.toLocaleString('id-ID')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                    <h5 className="font-bold text-slate-800 text-xs uppercase tracking-wide">Aliran Finansial (Hutang-Piutang)</h5>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      Penjualan bertipe Kredit otomatis mencatat Piutang usaha. Pembelian stok bertipe Kredit ke Supplier mencatat Hutang dagang. Pelunasan di kasir atau logistik melunaskan saldo secara dinamis.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                    <h5 className="font-bold text-slate-800 text-xs uppercase tracking-wide">Aliran Fisik &amp; Logistik</h5>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      Barang PO masuk menambah stok cabang. Penjualan barang mengurangi stok cabang bersangkutan secara riil. Transaksi penjualan memicu daftar tugas logistik kurir pengiriman otomatis.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. PENJELASAN MENU */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-indigo-600">
+                  <span className="h-6 w-1 rounded-full bg-indigo-600"></span>
+                  <h4 className="text-lg font-extrabold tracking-tight">4. Fungsi &amp; Kegunaan Setiap Menu Utama</h4>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="bg-indigo-50 text-indigo-600 p-2 rounded-lg h-9 w-9 flex items-center justify-center shrink-0">
+                      <TrendingUp className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-900 text-sm">Dashboard Analitik</h5>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Pusat kendali visual untuk memantau ringkasan omset penjualan kotor, pengeluaran belanja modal (PO Supplier), sisa piutang tertunggak, dan total hutang usaha secara interaktif. Dilengkapi Bar Chart penjualan produk terlaris dan Pie Chart persebaran kategori stok.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="bg-indigo-50 text-indigo-600 p-2 rounded-lg h-9 w-9 flex items-center justify-center shrink-0">
+                      <ShoppingCart className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-900 text-sm">POS Penjualan (Kasir Digital)</h5>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Mesin kasir digital responsif yang melayani transaksi penjualan cepat, pencarian SKU/nama produk dinamis, pendaftaran customer baru on-the-fly, kalkulator kembalian otomatis, serta pencetakan bukti nota transaksi struk POS terstandar.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="bg-indigo-50 text-indigo-600 p-2 rounded-lg h-9 w-9 flex items-center justify-center shrink-0">
+                      <Package className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-900 text-sm">Monitor Stok &amp; Koreksi Opname</h5>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Menampilkan rincian ketersediaan stok fisik barang di setiap cabang secara rinci. Pengguna dengan peran Admin atau Kepala Cabang memiliki otoritas untuk melakukan revisi stock opname jika ditemukan selisih barang, dilengkapi log alasan dan nama operator.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="bg-indigo-50 text-indigo-600 p-2 rounded-lg h-9 w-9 flex items-center justify-center shrink-0">
+                      <Coins className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-900 text-sm">Manajemen Hutang &amp; Piutang</h5>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Memantau sisa saldo kewajiban hutang ritel kepada supplier serta tagihan piutang dari pelanggan yang belum terbayar. Finance/Admin dapat melunaskan cicilan hutang-piutang dagang secara parsial atau langsung lunas.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="bg-indigo-50 text-indigo-600 p-2 rounded-lg h-9 w-9 flex items-center justify-center shrink-0">
+                      <Truck className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-900 text-sm">Pengiriman Armada Kurir</h5>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Modul khusus logistik kurir. Memungkinkan kurir menandai barang pesanan pelanggan 'Dalam Pengiriman' serta menyelesaikan status menjadi 'Selesai Diterima' dengan memasukkan nama penerima fisik dan melakukan pelunasan sisa COD tunai langsung ke sistem.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 5. PENUTUP */}
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex items-center gap-2 text-indigo-600">
+                  <span className="h-6 w-1 rounded-full bg-indigo-600"></span>
+                  <h4 className="text-lg font-extrabold tracking-tight">5. Kesimpulan</h4>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Sistem POS Kasir &amp; Stok Multi-User Terdistribusi bukan sekadar alat pencatat penjualan biasa, melainkan fondasi digital utama untuk menyatukan kerja kolaborasi seluruh staf gudang, kasir toko, tim sales marketing, armada kurir pengantaran barang, hingga pimpinan manajemen ritel dalam satu alur kerja yang serasi, transparan, dan dapat dipertanggungjawabkan.
+                </p>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Dengan keandalan yang optimal, performa yang gegas, serta kemudahan kustomisasi fitur di masa mendatang, platform ini siap mendukung akselerasi PT Ritel Sentosa Bersama menjadi pemain terdepan di era transformasi ritel digital modern.
+                </p>
+              </div>
+
+              {/* Signature */}
+              <div className="flex justify-end pt-6">
+                <div className="text-center border-t border-slate-100 pt-4 w-64 text-xs">
+                  <p className="text-slate-400 font-medium">Disetujui secara digital oleh:</p>
+                  <p className="font-extrabold text-slate-800 mt-3">Tim Pengembang &amp; IT</p>
+                  <p className="text-[10px] text-indigo-600 font-bold mt-0.5">PT Ritel Sentosa Bersama</p>
                 </div>
               </div>
 
